@@ -94,6 +94,8 @@ export default function Dashboard() {
           );
         }
         localStorage.removeItem("token");
+        document.cookie =
+          "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
         router.push("/login");
       } finally {
         setIsLoading(false);
@@ -105,6 +107,8 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    document.cookie =
+      "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
     toast.success("Successfully logged out.");
     router.push("/login");
   };

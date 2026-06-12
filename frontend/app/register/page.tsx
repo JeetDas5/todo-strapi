@@ -55,10 +55,11 @@ export default function RegisterPage() {
     try {
       const data = await registerUser(username, email, password);
       localStorage.setItem("token", data.jwt);
+      document.cookie = `token=${data.jwt}; path=/; max-age=604800; SameSite=Lax`;
       toast.success("Registration successful! Welcome to TaskFlow.");
       router.push("/");
     } catch (err) {
-      console.log(err)
+      console.log(err);
       if (err instanceof Error) {
         toast.error(err.message);
       } else {

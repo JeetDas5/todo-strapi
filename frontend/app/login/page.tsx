@@ -36,6 +36,7 @@ export default function LoginPage() {
     try {
       const data = await loginUser(email, password);
       localStorage.setItem("token", data.jwt);
+      document.cookie = `token=${data.jwt}; path=/; max-age=604800; SameSite=Lax`;
       toast.success("Welcome back! Login successful.");
       router.push("/");
     } catch (error) {
