@@ -485,7 +485,7 @@ export interface ApiTodoTodo extends Struct.CollectionTypeSchema {
     singularName: 'todo';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     completed: Schema.Attribute.Boolean;
@@ -501,8 +501,8 @@ export interface ApiTodoTodo extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    users_permissions_user: Schema.Attribute.Relation<
-      'oneToOne',
+    user: Schema.Attribute.Relation<
+      'manyToOne',
       'plugin::users-permissions.user'
     >;
   };
