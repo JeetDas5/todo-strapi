@@ -3,7 +3,6 @@ import { factories } from "@strapi/strapi";
 export default factories.createCoreController(
   "api::todo.todo",
   ({ strapi }) => ({
-    // Custom legacy controllers
     async myTodos(ctx) {
       const user = ctx.state.user;
 
@@ -32,7 +31,7 @@ export default factories.createCoreController(
       }
 
       const body = ctx.request.body;
-      const data = body.data || body; // Support both nested { data: { title } } and flat { title }
+      const data = body.data || body;
 
       const todo = await strapi.documents("api::todo.todo").create({
         data: {
@@ -45,14 +44,12 @@ export default factories.createCoreController(
       return todo;
     },
 
-    // Overriding core REST endpoints for strict security and ownership boundaries
     async find(ctx) {
       const user = ctx.state.user;
       if (!user) {
         return ctx.unauthorized();
       }
 
-      // Enforce filter on user.documentId
       const query = ctx.query as any;
       query.filters = {
         ...(query.filters || {}),
@@ -63,7 +60,9 @@ export default factories.createCoreController(
         },
       };
 
-      const { results, pagination } = await strapi.service("api::todo.todo").find(query);
+      const { results, pagination } = await strapi
+        .service("api::todo.todo")
+        .find(query);
       const sanitizedResults = await this.sanitizeOutput(results, ctx);
       return this.transformResponse(sanitizedResults, { pagination });
     },
@@ -101,13 +100,14 @@ export default factories.createCoreController(
 
       const body = ctx.request.body;
       if (!body || typeof body.data !== "object") {
-        return ctx.badRequest("Missing \"data\" payload in request body");
+        return ctx.badRequest('Missing "data" payload in request body');
       }
 
-      // Sanitize the input fields provided by the client
-      const sanitizedInputData = (await this.sanitizeInput(body.data, ctx)) as any;
+      const sanitizedInputData = (await this.sanitizeInput(
+        body.data,
+        ctx,
+      )) as any;
 
-      // Call the service directly and associate with the user's documentId (bypassing REST input validation)
       const entity = await strapi.service("api::todo.todo").create({
         data: {
           ...sanitizedInputData,
@@ -141,7 +141,6 @@ export default factories.createCoreController(
         return ctx.forbidden("You do not own this todo");
       }
 
-      // Prevent re-assigning the todo to another user
       if (ctx.request.body.data) {
         delete ctx.request.body.data.user;
       }
